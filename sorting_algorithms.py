@@ -24,16 +24,17 @@ def selection_sort(arr):
     # Start the timer
     start_time = time.time()
     # Traverse through all array elements
-    for i in range(n-1):
+    for i in range(0, n - 1):
         # Find the minimum element in the remaining unsorted array
         min_idx = i
         # Traverse through the unsorted array
-        for j in range(i + 1, n):
+        for curr_idx in range(i+1, n):
             # Update the index of the minimum element
-            if arr[j] < arr[min_idx]:
-                min_idx = j
-        # Swap the found minimum element with the first element
-        arr[i], arr[min_idx] = arr[min_idx], arr[i]
+            if arr[curr_idx] < arr[min_idx]:
+                min_idx = curr_idx
+        if min_idx != i:
+            # Swap the found minimum element with the first element
+            arr[i], arr[min_idx] = arr[min_idx], arr[i]
     elapsed_time = time.time() - start_time
     print(f"Total time taken by selection sort for {n} elements: {elapsed_time}")
     return arr, elapsed_time
