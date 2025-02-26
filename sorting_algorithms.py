@@ -86,6 +86,7 @@ def sort_arrays(arrays, values, algorithm, size, queue):
         sorted_arrays.append(sorted_array)
         time_dic[len(arr)] += execution_time / size
     queue.put((sorted_arrays, time_dic))
+    print(f"Finished sorting {len(arrays)} arrays using {algorithm.__name__}")
 
 #method to check if an array id sorted or not
 def _is_array_sorted(arr:list) -> bool:
@@ -146,17 +147,24 @@ def main():
     bubble_sort_process.start()
     insertion_sort_process.start()
     selection_sort_process.start()
-
-    # Wait for the processes to finish
-    bubble_sort_process.join()
-    insertion_sort_process.join()
-    selection_sort_process.join()
-
+    
     # Get the results from the queues
     bubble_sort_lists, bubble_sort_time_dict = bubble_sort_queue.get()
     insertion_sort_lists, insertion_sort_time_dict = insertion_sort_queue.get()
     selection_sort_lists, selection_sort_time_dict = selection_sort_queue.get()
 
+    print("All results have been retrieved")
+    
+
+    
+    # Wait for the processes to finish
+    bubble_sort_process.join()
+    insertion_sort_process.join()
+    selection_sort_process.join()
+
+    print("All processes have finished")
+
+    
     # Test and print the results
     test_arrays(bubble_sort_lists)
     print_average_time(bubble_sort_time_dict)
