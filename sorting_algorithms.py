@@ -27,13 +27,13 @@ def selection_sort(arr):
     for i in range(0, n - 1):
         # Find the minimum element in the remaining unsorted array
         min_idx = i
-        # Traverse through the unsorted array
+        # Traverse through the unsorted part of the array
         for curr_idx in range(i+1, n):
             # Update the index of the minimum element
             if arr[curr_idx] < arr[min_idx]:
                 min_idx = curr_idx
         if min_idx != i:
-            # Swap the found minimum element with the first element
+            # Swap the found minimum element with the current element
             arr[i], arr[min_idx] = arr[min_idx], arr[i]
     elapsed_time = time.time() - start_time
     print(f"Total time taken by selection sort for {n} elements: {elapsed_time}")
