@@ -4,7 +4,7 @@ import time
 import matplotlib.pyplot as plt
 
 #Generating the sizes of the used
-def generate_sizes(lower_bound: int = 125, upper_bound:int = 256000, coefficient:float = 2) -> list:
+def generate_sizes(lower_bound: int = 125, upper_bound:int = 128000, coefficient:float = 2) -> list:
     values = []
     while lower_bound <= upper_bound:
         values.append(lower_bound)
@@ -129,7 +129,7 @@ def plot_time(bubble_sort_time_dict:dict, insertion_sort_time_dict:dict, selecti
 
 def main():
     size = 5
-    values = generate_sizes(125, 256000, 2)
+    values = generate_sizes()
     arrays = generate_arrays(values, 5)
 
     bubble_sort_lists, bubble_sort_time_dict = sort_arrays(copy.deepcopy(arrays), values, bubble_sort, size)
