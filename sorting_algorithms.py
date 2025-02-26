@@ -2,7 +2,7 @@ import copy
 import random
 import time
 import matplotlib.pyplot as plt
-
+import multiprocessing as mp
 #Generating the sizes of the used
 def generate_sizes(lower_bound: int = 125, upper_bound:int = 128000, coefficient:float = 2) -> list:
     values = []
@@ -50,9 +50,9 @@ def insertion_sort(arr):
         prev_idx = i-1
         current = arr[i]
         while prev_idx >= 0 and arr[prev_idx] > current:
-            # Swap the elements if the previous element is greater
+            # Shift the elements if the previous element is greater
             arr[prev_idx+1] = arr[prev_idx]
-            # Decrement prev_index to the previous index
+            # Decrement prev_index
             prev_idx -= 1
         # Insert the current element at the correct position
         arr[prev_idx+1] = current
@@ -78,14 +78,14 @@ def bubble_sort(arr):
     return arr, elapsed_time
 
 #Sortin all arrays using the specified algorithm
-def sort_arrays(arrays: list[list], values:list, algorithm, size:int):
+def sort_arrays(arrays, values, algorithm, size, queue):
     sorted_arrays = []
-    time_dic = {value:0 for value in values}
+    time_dic = {value: 0 for value in values}
     for arr in arrays:
         sorted_array, execution_time = algorithm(arr)
         sorted_arrays.append(sorted_array)
         time_dic[len(arr)] += execution_time / size
-    return sorted_arrays, time_dic
+    queue.put((sorted_arrays, time_dic))
 
 #method to check if an array id sorted or not
 def _is_array_sorted(arr:list) -> bool:
@@ -131,20 +131,44 @@ def main():
     size = 5
     values = generate_sizes()
     arrays = generate_arrays(values, 5)
+    
+    # Create a queue for each sorting algorithm to store the results
+    bubble_sort_queue = mp.Queue()
+    insertion_sort_queue = mp.Queue()
+    selection_sort_queue = mp.Queue()
+    
+    # Create a process for each sorting algortihm
+    bubble_sort_process = mp.Process(target=sort_arrays, args=(copy.deepcopy(arrays), values, bubble_sort, size, bubble_sort_queue))
+    insertion_sort_process = mp.Process(target=sort_arrays, args=(copy.deepcopy(arrays), values, insertion_sort, size, insertion_sort_queue))
+    selection_sort_process = mp.Process(target=sort_arrays, args=(copy.deepcopy(arrays), values, selection_sort, size, selection_sort_queue))
 
-    bubble_sort_lists, bubble_sort_time_dict = sort_arrays(copy.deepcopy(arrays), values, bubble_sort, size)
+    # Start the processes
+    bubble_sort_process.start()
+    insertion_sort_process.start()
+    selection_sort_process.start()
+
+    # Wait for the processes to finish
+    bubble_sort_process.join()
+    insertion_sort_process.join()
+    selection_sort_process.join()
+
+    # Get the results from the queues
+    bubble_sort_lists, bubble_sort_time_dict = bubble_sort_queue.get()
+    insertion_sort_lists, insertion_sort_time_dict = insertion_sort_queue.get()
+    selection_sort_lists, selection_sort_time_dict = selection_sort_queue.get()
+
+    # Test and print the results
     test_arrays(bubble_sort_lists)
     print_average_time(bubble_sort_time_dict)
 
-    insertion_sort_lists, insertion_sort_time_dict = sort_arrays(copy.deepcopy(arrays), values, insertion_sort, size)
     test_arrays(insertion_sort_lists)
     print_average_time(insertion_sort_time_dict)
 
-    selection_sort_lists, selection_sort_time_dict = sort_arrays(copy.deepcopy(arrays), values, selection_sort, size)
     test_arrays(selection_sort_lists)
     print_average_time(selection_sort_time_dict)
 
     plot_time(bubble_sort_time_dict, insertion_sort_time_dict, selection_sort_time_dict)
+
 
 
 if __name__ == "__main__":
