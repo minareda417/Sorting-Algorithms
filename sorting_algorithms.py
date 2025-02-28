@@ -66,19 +66,25 @@ def bubble_sort(arr):
     n = len(arr)
     #Start the timer
     start_time = time.time()
+    # Traverse through all array elements
     for i in range(1,n):
+        # Flag to check when the array is sorted
         is_sorted = True
-        for j in range(n-i):
-            if arr[j] > arr[j+1]:
-                arr[j], arr[j + 1] = arr[j + 1], arr[j]
+        # Iterate through the remaining indices to find the largest element
+        for curr_idx in range(n-i):
+            # Swap the elements if the current element is greater than the next element
+            if arr[curr_idx] > arr[curr_idx+1]:
+                arr[curr_idx], arr[curr_idx + 1] = arr[curr_idx + 1], arr[curr_idx]
+                # Set the flag to false to indicate that swapping took place
                 is_sorted = False
+        # Break the loop if the array is sorted
         if is_sorted is True:
             break
     elapsed_time = time.time() - start_time
     print(f"Total time taken by bubble sort for {n} elements: {elapsed_time}")
     return arr, elapsed_time
 
-#Sortin all arrays using the specified algorithm
+# Sorting all arrays using the specified algorithm
 def sort_arrays(arrays, values, algorithm, size, queue):
     sorted_arrays = []
     time_dic = {value: 0 for value in values}
@@ -89,11 +95,11 @@ def sort_arrays(arrays, values, algorithm, size, queue):
     queue.put((sorted_arrays, time_dic))
     print(f"Finished sorting {len(arrays)} arrays using {algorithm.__name__}")
 
-#method to check if an array id sorted or not
+# Method to check if an array id sorted or not
 def _is_array_sorted(arr:list) -> bool:
     return all(arr[i] <= arr[i+1] for i in range (len(arr) - 1))
 
-# method to test if all arrays are well sorted
+# Method to test if all arrays are well sorted
 def test_arrays(arrays:list[list]) -> int:
     correct_arrays = 0
     for arr in arrays:
