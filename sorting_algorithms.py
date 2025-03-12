@@ -84,6 +84,73 @@ def bubble_sort(arr):
     print(f"Total time taken by bubble sort for {n} elements: {elapsed_time}")
     return arr, elapsed_time
 
+####################################### Part 2 #######################################
+# Method to partition the array using a random pivot
+def partition_random_pivot(arr, low, high):
+    # Choose a random pivot
+    pivot = arr[random.randint(low, high)]
+    #  Left and right pointers
+    left = low
+    right = high
+    # While the left values are smaller than the right values, keep shifting the pointers
+    while (left <= right):
+        # Move the left pointer to a larger value
+        while(arr[left] < pivot):
+            left += 1
+        # Move the right pointer to a smaller value
+        while(arr[right] > pivot):
+            right -= 1
+        # If arr[left] > pivot and arr[right] < pivot
+        # Then left <= right, swap the values
+        if left <= right:
+            arr[left], arr[right] = arr[right], arr[left]
+            left += 1
+            right -= 1
+    # Left is now the first index of the right partition (left > right)
+    return left
+# Recursive quick sort method
+def _quick_sort_recursion(arr,low,high):
+    if low < high:
+        # Find the pivot index
+        pivot_idx = partition_random_pivot(arr, low, high)
+        # Sort the elements before and after the pivot
+        _quick_sort_recursion(arr, low, pivot_idx - 1)
+        _quick_sort_recursion(arr, pivot_idx, high)
+# Quick sort caller method to calculate the elapsed time
+def quick_sort(arr):
+    # Get the array length
+    n = len(arr)
+    # Start the timer
+    start_time = time.time()
+    # Call the recursive quick sort method
+    _quick_sort_recursion(arr, 0, n-1)
+    # Calculate the elapsed time
+    elapsed_time = time.time() - start_time
+    print(f"Total time taken by quick sort for {n} elements: {elapsed_time}")
+    return arr, elapsed_time
+
+# Method to find the kth greatest element in an unsorted array
+    def find_kth_greatest(arr, k, low, high):
+    if not (1 <= k <= len(arr)):
+        return None
+    # Convert k-th greatest to index in ascending order
+    k_index = len(arr) - k 
+    # Get the pivot index
+    pivot_idx = partition_random_pivot(arr, low, high)
+    
+    if low <= high:
+        # If the pivot index is the k-th greatest element, return the element
+        if pivot_idx == k_index:
+            return arr[pivot_idx]
+        # If the pivot index is greater than the k-th greatest element
+        # Search the left partition
+        elif pivot_idx > k_index:
+            return find_kth_greatest(arr, k, low, pivot_idx - 1)
+        # If the pivot index is less than the k-th greatest element
+        # Search the right partition
+        else:
+            return find_kth_greatest(arr, k, pivot_idx, high)
+
 def _merge(arr1, arr2):
     arr = []
     while arr1 and arr2:
@@ -187,6 +254,7 @@ def main():
     bubble_sort_queue = mp.Queue()
     insertion_sort_queue = mp.Queue()
     selection_sort_queue = mp.Queue()
+    quick_sort_queue = mp.Queue()
     merge_sort_queue = mp.Queue()
     tim_sort_queue = mp.Queue()
 
@@ -194,6 +262,7 @@ def main():
     bubble_sort_process = mp.Process(target=sort_arrays, args=(copy.deepcopy(arrays), values, bubble_sort, size, bubble_sort_queue))
     insertion_sort_process = mp.Process(target=sort_arrays, args=(copy.deepcopy(arrays), values, insertion_sort, size, insertion_sort_queue))
     selection_sort_process = mp.Process(target=sort_arrays, args=(copy.deepcopy(arrays), values, selection_sort, size, selection_sort_queue))
+    quick_sort_process = mp.Process(target=sort_arrays, args=(copy.deepcopy(arrays), values, quick_sort, size, quick_sort_queue))
     merge_sort_process =  mp.Process(target = sort_arrays, args = (copy.deepcopy(arrays), values, merge_sort, size, merge_sort_queue))
     tim_sort_process = mp.Process(target = sort_arrays, args = (copy.deepcopy(arrays), values, tim_sort, size, tim_sort_queue))
 
@@ -203,11 +272,13 @@ def main():
     selection_sort_process.start()
     merge_sort_process.start()
     tim_sort_process.start()
+    quick_sort_process.start()
 
     # Get the results from the queues
     bubble_sort_lists, bubble_sort_time_dict = bubble_sort_queue.get()
     insertion_sort_lists, insertion_sort_time_dict = insertion_sort_queue.get()
     selection_sort_lists, selection_sort_time_dict = selection_sort_queue.get()
+    quick_sort_lists, quick_sort_time_dict = quick_sort_queue.get()
     merge_sort_lists, merge_sort_time_dict = merge_sort_queue.get()
     tim_sort_lists, tim_sort_time_dict = tim_sort_queue.get()
 
@@ -219,6 +290,7 @@ def main():
     bubble_sort_process.join()
     insertion_sort_process.join()
     selection_sort_process.join()
+    quick_sort_process.join()
     merge_sort_process.join()
     tim_sort_process.join()
 
@@ -241,7 +313,17 @@ def main():
     test_arrays(tim_sort_lists)
     print_average_time(tim_sort_time_dict)
 
+    test_arrays(quick_sort_lists)
+    print_average_time(quick_sort_time_dict)
+
     plot_time(bubble_sort_time_dict, insertion_sort_time_dict, selection_sort_time_dict)
+    plot_time(quick_sort_time_dict, merge_sort_time_dict, tim_sort_time_dict)
+
+    arr = random.sample(range(1, 20), 12)
+    k = 3
+    print("Array:", arr)
+    for i in range(1, len(arr)):
+        print(f"The {i}th greatest element is {find_kth_greatest(arr, i,0 , len(arr) - 1)}")
 
 
 
