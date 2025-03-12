@@ -130,14 +130,14 @@ def quick_sort(arr):
     return arr, elapsed_time
 
 # Method to find the kth greatest element in an unsorted array
-    def find_kth_greatest(arr, k, low, high):
+def find_kth_greatest(arr, k, low, high):
     if not (1 <= k <= len(arr)):
         return None
     # Convert k-th greatest to index in ascending order
     k_index = len(arr) - k 
     # Get the pivot index
     pivot_idx = partition_random_pivot(arr, low, high)
-    
+
     if low <= high:
         # If the pivot index is the k-th greatest element, return the element
         if pivot_idx == k_index:
@@ -224,15 +224,32 @@ def print_average_time(time_dict:dict):
         print(f"Average time for size {size} is {execution_time} seconds")
 
 #Plotting Array size versus time for each sorting algorithm
-def plot_time(bubble_sort_time_dict:dict, insertion_sort_time_dict:dict, selection_sort_time_dict:dict)->None:
-    x = list(bubble_sort_time_dict.keys())
-    y_bubble = list(bubble_sort_time_dict.values())
+def plot_time(quick_sort_time_dict:dict, insertion_sort_time_dict:dict, selection_sort_time_dict:dict)->None:
+    x = list(quick_sort_time_dict.keys())
+    y_bubble = list(quick_sort_time_dict.values())
     y_insertion = list(insertion_sort_time_dict.values())
     y_selection = list(selection_sort_time_dict.values())
 
     plt.plot(x, y_bubble, color = 'r', label = 'bubble sort')
     plt.plot(x, y_insertion, color = 'g', label = 'insertion sort')
     plt.plot(x, y_selection, color = 'b', label = 'selection sort')
+
+    plt.xlabel('Array size')
+    plt.ylabel('Time(seconds)')
+    plt.title('Array size vs Time')
+
+    plt.legend()
+    plt.show()
+#Plotting Array size versus time for each sorting algorithm  
+def plot_time_part2(quick_sort_time_dict:dict, merge_sort_time_dict:dict, tim_sort_time_dict:dict)->None:
+    x = list(quick_sort_time_dict.keys())
+    y_quick = list(quick_sort_time_dict.values())
+    y_merge = list(merge_sort_time_dict.values())
+    y_selection = list(tim_sort_time_dict.values())
+
+    plt.plot(x, y_quick, color = 'r', label = 'quick sort')
+    plt.plot(x, y_merge, color = 'g', label = 'merge sort')
+    plt.plot(x, y_selection, color = 'b', label = 'tim sort')
 
     plt.xlabel('Array size')
     plt.ylabel('Time(seconds)')
@@ -251,33 +268,33 @@ def main():
     arrays = generate_arrays(values, 5)
     
     # Create a queue for each sorting algorithm to store the results
-    bubble_sort_queue = mp.Queue()
-    insertion_sort_queue = mp.Queue()
-    selection_sort_queue = mp.Queue()
+    # bubble_sort_queue = mp.Queue()
+    # insertion_sort_queue = mp.Queue()
+    # selection_sort_queue = mp.Queue()
     quick_sort_queue = mp.Queue()
     merge_sort_queue = mp.Queue()
     tim_sort_queue = mp.Queue()
 
     # Create a process for each sorting algortihm
-    bubble_sort_process = mp.Process(target=sort_arrays, args=(copy.deepcopy(arrays), values, bubble_sort, size, bubble_sort_queue))
-    insertion_sort_process = mp.Process(target=sort_arrays, args=(copy.deepcopy(arrays), values, insertion_sort, size, insertion_sort_queue))
-    selection_sort_process = mp.Process(target=sort_arrays, args=(copy.deepcopy(arrays), values, selection_sort, size, selection_sort_queue))
+    # bubble_sort_process = mp.Process(target=sort_arrays, args=(copy.deepcopy(arrays), values, bubble_sort, size, bubble_sort_queue))
+    # insertion_sort_process = mp.Process(target=sort_arrays, args=(copy.deepcopy(arrays), values, insertion_sort, size, insertion_sort_queue))
+    # selection_sort_process = mp.Process(target=sort_arrays, args=(copy.deepcopy(arrays), values, selection_sort, size, selection_sort_queue))
     quick_sort_process = mp.Process(target=sort_arrays, args=(copy.deepcopy(arrays), values, quick_sort, size, quick_sort_queue))
     merge_sort_process =  mp.Process(target = sort_arrays, args = (copy.deepcopy(arrays), values, merge_sort, size, merge_sort_queue))
     tim_sort_process = mp.Process(target = sort_arrays, args = (copy.deepcopy(arrays), values, tim_sort, size, tim_sort_queue))
 
     # Start the processes
-    bubble_sort_process.start()
-    insertion_sort_process.start()
-    selection_sort_process.start()
+    # bubble_sort_process.start()
+    # insertion_sort_process.start()
+    # selection_sort_process.start()
     merge_sort_process.start()
     tim_sort_process.start()
     quick_sort_process.start()
 
     # Get the results from the queues
-    bubble_sort_lists, bubble_sort_time_dict = bubble_sort_queue.get()
-    insertion_sort_lists, insertion_sort_time_dict = insertion_sort_queue.get()
-    selection_sort_lists, selection_sort_time_dict = selection_sort_queue.get()
+    # bubble_sort_lists, quick_sort_time_dict = bubble_sort_queue.get()
+    # insertion_sort_lists, insertion_sort_time_dict = insertion_sort_queue.get()
+    # selection_sort_lists, selection_sort_time_dict = selection_sort_queue.get()
     quick_sort_lists, quick_sort_time_dict = quick_sort_queue.get()
     merge_sort_lists, merge_sort_time_dict = merge_sort_queue.get()
     tim_sort_lists, tim_sort_time_dict = tim_sort_queue.get()
@@ -287,9 +304,9 @@ def main():
 
 
     # Wait for the processes to finish
-    bubble_sort_process.join()
-    insertion_sort_process.join()
-    selection_sort_process.join()
+    # bubble_sort_process.join()
+    # insertion_sort_process.join()
+    # selection_sort_process.join()
     quick_sort_process.join()
     merge_sort_process.join()
     tim_sort_process.join()
@@ -298,14 +315,14 @@ def main():
 
 
     # Test and print the results
-    test_arrays(bubble_sort_lists)
-    print_average_time(bubble_sort_time_dict)
+    # test_arrays(bubble_sort_lists)
+    # print_average_time(quick_sort_time_dict)
 
-    test_arrays(insertion_sort_lists)
-    print_average_time(insertion_sort_time_dict)
+    # test_arrays(insertion_sort_lists)
+    # print_average_time(insertion_sort_time_dict)
 
-    test_arrays(selection_sort_lists)
-    print_average_time(selection_sort_time_dict)
+    # test_arrays(selection_sort_lists)
+    # print_average_time(selection_sort_time_dict)
 
     test_arrays(merge_sort_lists)
     print_average_time(merge_sort_time_dict)
@@ -316,9 +333,16 @@ def main():
     test_arrays(quick_sort_lists)
     print_average_time(quick_sort_time_dict)
 
-    plot_time(bubble_sort_time_dict, insertion_sort_time_dict, selection_sort_time_dict)
-    plot_time(quick_sort_time_dict, merge_sort_time_dict, tim_sort_time_dict)
-
+    # plot_time(quick_sort_time_dict, insertion_sort_time_dict, selection_sort_time_dict)
+    plot_time_part2(quick_sort_time_dict, merge_sort_time_dict, tim_sort_time_dict)
+    x = list(quick_sort_time_dict.keys())
+    y_quick = list(quick_sort_time_dict.values())
+    plt.plot(x, y_quick, color = 'r', label = 'quick sort')
+    plt.xlabel('Array size')
+    plt.ylabel('Time(seconds)')
+    plt.title('Array size vs Time')
+    plt.legend()
+    plt.show()
     arr = random.sample(range(1, 20), 12)
     k = 3
     print("Array:", arr)
