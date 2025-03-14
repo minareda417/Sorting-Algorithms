@@ -174,7 +174,7 @@ def merge_sort(arr):
         arr2, _ = merge_sort(arr[mid:])
         arr = _merge(arr1, arr2)
     elapsed_time = time.time() - start_time
-    print(f"Total time taken by merge sort for {n} elements: {elapsed_time}")
+    # print(f"Total time taken by merge sort for {n} elements: {elapsed_time}")
     return arr, elapsed_time
 
 def tim_sort(arr, threshold = 32):
@@ -248,9 +248,9 @@ def print_average_time(time_dict:dict):
         print(f"Average time for size {size} is {execution_time} seconds")
 
 #Plotting Array size versus time for each sorting algorithm
-def plot_time(quick_sort_time_dict:dict, insertion_sort_time_dict:dict, selection_sort_time_dict:dict)->None:
-    x = list(quick_sort_time_dict.keys())
-    y_bubble = list(quick_sort_time_dict.values())
+def plot_time(bubble_sort_time_dict:dict, insertion_sort_time_dict:dict, selection_sort_time_dict:dict)->None:
+    x = list(bubble_sort_time_dict.keys())
+    y_bubble = list(bubble_sort_time_dict.values())
     y_insertion = list(insertion_sort_time_dict.values())
     y_selection = list(selection_sort_time_dict.values())
 
@@ -265,17 +265,22 @@ def plot_time(quick_sort_time_dict:dict, insertion_sort_time_dict:dict, selectio
     plt.legend()
     plt.show()
 #Plotting Array size versus time for each sorting algorithm  
-def plot_time_part2(quick_sort_time_dict:dict, merge_sort_time_dict:dict, tim_sort_time_dict:dict, heap_sort_time_dict:dict)->None:
-    x = list(quick_sort_time_dict.keys())
+def plot_time_part2(bubble_sort_time_dict:dict, insertion_sort_time_dict:dict, selection_sort_time_dict:dict,quick_sort_time_dict:dict, merge_sort_time_dict:dict, heap_sort_time_dict:dict)->None:
+    x = list(bubble_sort_time_dict.keys())
+    y_bubble = list(bubble_sort_time_dict.values())
+    y_insertion = list(insertion_sort_time_dict.values())
+    y_selection = list(selection_sort_time_dict.values())
+
     y_quick = list(quick_sort_time_dict.values())
     y_merge = list(merge_sort_time_dict.values())
-    y_selection = list(tim_sort_time_dict.values())
     y_heap = list(heap_sort_time_dict.values())
 
-    plt.plot(x, y_quick, color = 'r', label = 'quick sort')
-    plt.plot(x, y_merge, color = 'g', label = 'merge sort')
-    plt.plot(x, y_selection, color = 'b', label = 'tim sort')
-    plt.plot(x, y_heap, color = 'y', label = 'heap sort')
+    plt.plot(x, y_bubble, color='r', label='Bubble Sort')        
+    plt.plot(x, y_insertion, color='g', label='Insertion Sort')
+    plt.plot(x, y_selection, color='b', label='Selection Sort') 
+    plt.plot(x, y_quick, color='y', label='Quick Sort')         
+    plt.plot(x, y_merge, color='m', label='Merge Sort')       
+    plt.plot(x, y_heap, color='c', label='Heap Sort')           
 
     plt.xlabel('Array size')
     plt.ylabel('Time(seconds)')
@@ -294,36 +299,36 @@ def main():
     arrays = generate_arrays(values, size)
     
     # Create a queue for each sorting algorithm to store the results
-    # bubble_sort_queue = mp.Queue()
-    # insertion_sort_queue = mp.Queue()
-    # selection_sort_queue = mp.Queue()
+    bubble_sort_queue = mp.Queue()
+    insertion_sort_queue = mp.Queue()
+    selection_sort_queue = mp.Queue()
     quick_sort_queue = mp.Queue()
     merge_sort_queue = mp.Queue()
     tim_sort_queue = mp.Queue()
     heap_sort_queue = mp.Queue()
 
     # Create a process for each sorting algortihm
-    # bubble_sort_process = mp.Process(target=sort_arrays, args=(copy.deepcopy(arrays), values, bubble_sort, size, bubble_sort_queue))
-    # insertion_sort_process = mp.Process(target=sort_arrays, args=(copy.deepcopy(arrays), values, insertion_sort, size, insertion_sort_queue))
-    # selection_sort_process = mp.Process(target=sort_arrays, args=(copy.deepcopy(arrays), values, selection_sort, size, selection_sort_queue))
+    bubble_sort_process = mp.Process(target=sort_arrays, args=(copy.deepcopy(arrays), values, bubble_sort, size, bubble_sort_queue))
+    insertion_sort_process = mp.Process(target=sort_arrays, args=(copy.deepcopy(arrays), values, insertion_sort, size, insertion_sort_queue))
+    selection_sort_process = mp.Process(target=sort_arrays, args=(copy.deepcopy(arrays), values, selection_sort, size, selection_sort_queue))
     quick_sort_process = mp.Process(target=sort_arrays, args=(copy.deepcopy(arrays), values, quick_sort, size, quick_sort_queue))
     merge_sort_process =  mp.Process(target = sort_arrays, args = (copy.deepcopy(arrays), values, merge_sort, size, merge_sort_queue))
     tim_sort_process = mp.Process(target = sort_arrays, args = (copy.deepcopy(arrays), values, tim_sort, size, tim_sort_queue))
     heap_sort_process = mp.Process(target = sort_arrays, args = (copy.deepcopy(arrays), values, heap_sort, size, heap_sort_queue))
 
     # Start the processes
-    # bubble_sort_process.start()
-    # insertion_sort_process.start()
-    # selection_sort_process.start()
+    bubble_sort_process.start()
+    insertion_sort_process.start()
+    selection_sort_process.start()
     merge_sort_process.start()
     tim_sort_process.start()
     quick_sort_process.start()
     heap_sort_process.start()
 
     # Get the results from the queues
-    # bubble_sort_lists, quick_sort_time_dict = bubble_sort_queue.get()
-    # insertion_sort_lists, insertion_sort_time_dict = insertion_sort_queue.get()
-    # selection_sort_lists, selection_sort_time_dict = selection_sort_queue.get()
+    bubble_sort_lists, bubble_sort_time_dict = bubble_sort_queue.get()
+    insertion_sort_lists, insertion_sort_time_dict = insertion_sort_queue.get()
+    selection_sort_lists, selection_sort_time_dict = selection_sort_queue.get()
     quick_sort_lists, quick_sort_time_dict = quick_sort_queue.get()
     merge_sort_lists, merge_sort_time_dict = merge_sort_queue.get()
     tim_sort_lists, tim_sort_time_dict = tim_sort_queue.get()
@@ -334,9 +339,9 @@ def main():
 
 
     # Wait for the processes to finish
-    # bubble_sort_process.join()
-    # insertion_sort_process.join()
-    # selection_sort_process.join()
+    bubble_sort_process.join()
+    insertion_sort_process.join()
+    selection_sort_process.join()
     quick_sort_process.join()
     merge_sort_process.join()
     tim_sort_process.join()
@@ -346,14 +351,14 @@ def main():
 
 
     # Test and print the results
-    # test_arrays(bubble_sort_lists)
-    # print_average_time(quick_sort_time_dict)
+    test_arrays(bubble_sort_lists)
+    print_average_time(quick_sort_time_dict)
 
-    # test_arrays(insertion_sort_lists)
-    # print_average_time(insertion_sort_time_dict)
+    test_arrays(insertion_sort_lists)
+    print_average_time(insertion_sort_time_dict)
 
-    # test_arrays(selection_sort_lists)
-    # print_average_time(selection_sort_time_dict)
+    test_arrays(selection_sort_lists)
+    print_average_time(selection_sort_time_dict)
 
     test_arrays(merge_sort_lists)
     print_average_time(merge_sort_time_dict)
@@ -368,7 +373,7 @@ def main():
     print_average_time(heap_sort_time_dict)
 
     # plot_time(quick_sort_time_dict, insertion_sort_time_dict, selection_sort_time_dict)
-    plot_time_part2(quick_sort_time_dict, merge_sort_time_dict, tim_sort_time_dict, heap_sort_time_dict)
+    plot_time_part2(bubble_sort_time_dict, insertion_sort_time_dict, selection_sort_time_dict, quick_sort_time_dict, merge_sort_time_dict, heap_sort_time_dict)
     x = list(quick_sort_time_dict.keys())
     y_quick = list(quick_sort_time_dict.values())
     plt.plot(x, y_quick, color = 'r', label = 'quick sort')
